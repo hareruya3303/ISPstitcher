@@ -20,7 +20,7 @@ findmax(gcc_avrg)
 findmax(gcc_phat)
 
 FS = 12
-plot(100*[gcc gcc_avrg gcc_phat],
+p = plot(100*[gcc gcc_avrg gcc_phat],
       ylim = (0, 100),
       labels = ["GCC no average" "GCC averaged" "GCC PHAT"],
       legend = :outerright,
@@ -41,3 +41,5 @@ gcc_phat_2 /= maximum(gcc_phat_2)
 surface(gcc_2)
 surface(gcc_avrg_2)
 surface(gcc_phat_2)
+
+savefig(p, string(dir[1:end-4], "figures/correlations.pdf"))
