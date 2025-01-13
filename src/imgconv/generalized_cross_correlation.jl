@@ -16,9 +16,11 @@ right_keys = [:right, :Right, :RIGHT, :RIGHT_LEFT, :Right_Left, :right_left]
 
 function _get_indexes(na::Tuple{Integer, Integer}, nb::Tuple{Integer, Integer}, dim::Integer)
     if dim ==1
-        return [1:min(na[1], nb[1]), :]
+        y = min(na[1], nb[1])
+        return [1:y, :], [nb[1]-y+1:nb[1], :]
     elseif dim ==2
-        return [:, 1:min(na[2], nb[2])]
+        x = min(na[2], nb[2])
+        return [:, 1:x], [:, (nb[2]-x+1):nb[2]]
     else
         error("Unsupported dimension! Images are considered to be 2D only!")
     end
@@ -26,9 +28,11 @@ end
 
 function _get_indexes(na::Tuple{Integer, Integer}, nb::Tuple{Integer, Integer}, dim::Union{NTuple{N, Integer}, Vector{<:Integer}}) where {N}
     if dim == (1,2)
-        return [1:min(na[1], nb[1]), :]
+        y = min(na[1], nb[1])
+        return [1:y, :], [(nb[1]-y+1):nb[1], :]
     elseif dim == (2,1)
-        return [:, 1:min(na[2], nb[2])]
+        x = min(na[2], nb[2])
+        return [:, 1:x], [:, (nb[2]-x+1):nb[2]]
     else
         error("Unsupported dimension! Images are considered to be 2D only!")
     end
@@ -77,19 +81,19 @@ end
 function generalized_cross_correlation(a::AbstractMatrix{<:RGB{T}}, b::AbstractMatrix{<:RGB{T}}, dim::Union{Integer, NTuple{<:Any, Integer}, Vector{<:Integer}}; type::Symbol=:none, gpu = false, rgb::Symbol = :Gray) where {T<:Real}
     na = size(a)
     nb = size(b)
-    inds = _get_indexes(na, nb, dim)
+    inds_a, inds_b = _get_indexes(na, nb, dim)
     if rgb in rgb_keys && gpu
-        A = GPUArray(float(channelview(a[inds...])))
-        B = GPUArray(float(channelview(b[inds...])))
+        A = GPUArray(float(channelview(a[inds_a...])))
+        B = GPUArray(float(channelview(b[inds_b...])))
     elseif rgb in rgb_keys && !gpu
-        A = float(channelview(a[inds...]))
-        B = float(channelview(b[inds...]))
+        A = float(channelview(a[inds_a...]))
+        B = float(channelview(b[inds_b...]))
     elseif rgb in gray_keys && gpu
-        A = GPUMatrix(float(T).(Gray.(a[inds...])))
-        B = GPUMatrix(float(T).(Gray.(b[inds...])))
+        A = GPUMatrix(float(T).(Gray.(a[inds_a...])))
+        B = GPUMatrix(float(T).(Gray.(b[inds_b...])))
     elseif rgb in gray_keys && !gpu
-        A = float(T).(Gray.(a[inds...]))
-        B = float(T).(Gray.(b[inds...]))
+        A = float(T).(Gray.(a[inds_a...]))
+        B = float(T).(Gray.(b[inds_b...]))
     else
         error("Invalid option for color type!\n Use one of ", rgb_keys, "\n or use ", gray_keys, "for grayscale processing!")
     end
@@ -114,19 +118,19 @@ function generalized_cross_correlation_shift(a::AbstractMatrix{<:RGB{T}}, b::Abs
     na = size(a)
     nb = size(b)
     dims = dim == 1 ? (1,2) : dim == 2 ? (2,1) : error("Invalid leading dimension for image correlation")
-    inds = _get_indexes(na, nb, dims)
+    inds_a, inds_b = _get_indexes(na, nb, dims)
     if rgb in rgb_keys && gpu
-        A = GPUArray(float(channelview(a[inds...])))
-        B = GPUArray(float(channelview(b[inds...])))
+        A = GPUArray(float(channelview(a[inds_a...])))
+        B = GPUArray(float(channelview(b[inds_b...])))
     elseif rgb in rgb_keys && !gpu
-        A = float(channelview(a[inds...]))
-        B = float(channelview(b[inds...]))
+        A = float(channelview(a[inds_a...]))
+        B = float(channelview(b[inds_b...]))
     elseif rgb in gray_keys && gpu
-        A = GPUMatrix(float(T).(Gray.(a[inds...])))
-        B = GPUMatrix(float(T).(Gray.(b[inds...])))
+        A = GPUMatrix(float(T).(Gray.(a[inds_a...])))
+        B = GPUMatrix(float(T).(Gray.(b[inds_b...])))
     elseif rgb in gray_keys && !gpu
-        A = float(T).(Gray.(a[inds...]))
-        B = float(T).(Gray.(b[inds...]))
+        A = float(T).(Gray.(a[inds_a...]))
+        B = float(T).(Gray.(b[inds_b...]))
     else
         error("Invalid option for color type!\n Use one of ", rgb_keys, "\n or use ", gray_keys, "for grayscale processing!")
     end
@@ -136,19 +140,19 @@ end
 function generalized_cross_correlation_shift(a::AbstractMatrix{<:RGB{T}}, b::AbstractMatrix{<:RGB{T}}, dim::Union{Integer, NTuple{<:Any, Integer}, Vector{<:Integer}}; type::Symbol=:none, gpu = false, rgb::Symbol = :Gray) where {T<:Real}
     na = size(a)
     nb = size(b)
-    inds = _get_indexes(na, nb, dim)
+    inds_a, inds_b = _get_indexes(na, nb, dim)
     if rgb in rgb_keys && gpu
-        A = GPUArray(float(channelview(a[inds...])))
-        B = GPUArray(float(channelview(b[inds...])))
+        A = GPUArray(float(channelview(a[inds_a...])))
+        B = GPUArray(float(channelview(b[inds_b...])))
     elseif rgb in rgb_keys && !gpu
-        A = float(channelview(a[inds...]))
-        B = float(channelview(b[inds...]))
+        A = float(channelview(a[inds_a...]))
+        B = float(channelview(b[inds_b...]))
     elseif rgb in gray_keys && gpu
-        A = GPUMatrix(float(T).(Gray.(a[inds...])))
-        B = GPUMatrix(float(T).(Gray.(b[inds...])))
+        A = GPUMatrix(float(T).(Gray.(a[inds_a...])))
+        B = GPUMatrix(float(T).(Gray.(b[inds_b...])))
     elseif rgb in gray_keys && !gpu
-        A = float(T).(Gray.(a[inds...]))
-        B = float(T).(Gray.(b[inds...]))
+        A = float(T).(Gray.(a[inds_a...]))
+        B = float(T).(Gray.(b[inds_b...]))
     else
         error("Invalid option for color type!\n Use one of ", rgb_keys, "\n or use ", gray_keys, "for grayscale processing!")
     end

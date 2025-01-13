@@ -6,3 +6,5 @@ $$
 $$
 
 as well as variations based on either the presence of a moving average or the use of phase transformation. These routines are used to find correlation peaks that indicate the best stitching point(s) between two images, identified as the correlation peak.
+
+This is not a full-fledged package, it is mostly a playground where I do my hobby that I thought could be useful for other people who wish there was a faster and precise way to stitch anime panning shots. Now that correlations have been implemented the next step should be implementing simple blending (feathering).
