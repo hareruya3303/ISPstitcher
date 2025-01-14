@@ -4,7 +4,7 @@ include(string(dir[1:end-4], "src/master.jl"))
 using .ISPstitcher
 
 # First step: open this lovely piece of art made by my friend, the fabulous and massively talented Axia (@axiermundi on twitter).
-a0 = load(string(dir, "/Cutest_art_from_cutest_artist.jpg"))
+a0 = load(string(dir, "/Cutest_art_from_the_wonderful_Axia.jpg"))
 a = a0[800:end, :]
 b = a0[1:1000, :]
 # The expected overlap is exactly 201 pixels, so that is what you should expect here too,
