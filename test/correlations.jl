@@ -16,8 +16,6 @@ gcc_rgb = generalized_cross_correlation(a, b, 1, rgb = :rgb)
 gcc_avrg_rgb = generalized_cross_correlation(a,b,1, type = :avrg, rgb=:rgb)
 gcc_phat_rgb = generalized_cross_correlation(a,b,1, type = :phat, rgb=:rgb)
 #Divide the gcc_phat by its maximum just to put every criterion on the same scale.
-gcc_phat /= maximum(gcc_phat)
-gcc_phat_rgb /= maximum(gcc_phat_rgb)
 
 @benchmark generalized_cross_correlation(a, b, 1)
 @benchmark generalized_cross_correlation(a, b, 1, type=:avrg)
@@ -49,8 +47,6 @@ p = plot(100*Array([gcc gcc_avrg gcc_phat gcc_rgb gcc_avrg_rgb gcc_phat_rgb]),
 gcc_2 = generalized_cross_correlation(a, b, (1, 2))
 gcc_avrg_2 = generalized_cross_correlation(a,b,(1,2), type = :avrg)
 gcc_phat_2 = generalized_cross_correlation(a,b,(1,2), type = :phat)
-#Divide the gcc_phat by its maximum just to put every criterion on the same scale.
-gcc_phat_2 /= maximum(gcc_phat_2)
 
 findmax(gcc_2)
 findmax(gcc_avrg_2)
@@ -63,9 +59,5 @@ findmax(gcc_phat_2)
 @benchmark generalized_cross_correlation(a, b, (1, 2), rgb = :rgb)
 @benchmark generalized_cross_correlation(a,b,(1,2), type = :avrg, rgb = :rgb)
 @benchmark generalized_cross_correlation(a,b,(1,2), type = :phat, rgb = :rgb)
-
-surface(gcc_2)
-surface(gcc_avrg_2)
-surface(gcc_phat_2)
 
 savefig(p, string(dir[1:end-4], "figures/correlations.pdf"))

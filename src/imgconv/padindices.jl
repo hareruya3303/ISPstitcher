@@ -103,7 +103,7 @@ function __make_indexes(na, nb, dims)
     reord_dims = Vector{Vector{Int}}(undef, length(dims))
     index_dims = Vector{UnitRange{Int}}(undef, length(dims))
     sorted_dims = sort(collect(dims))
-    for t in sorted_dims
+    for t in eachindex(sorted_dims)
         d = sorted_dims[t]
         if d == dims[1]
             l = min(na[d], nb[d])
