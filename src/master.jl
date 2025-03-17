@@ -1,8 +1,8 @@
 module ISPstitcher
 dir = @__DIR__
-using FFTW, Images, LinearAlgebra, Statistics, DSP, Suppressor, ArrayAllocators, Match
+using FFTW, Images, LinearAlgebra, Statistics, DSP, Suppressor, ArrayAllocators, Match, OffsetArrays
 using FFTW: rFFTWPlan
-import Base: *
+import Base: zeros
 
 GPUArray, GPUVector, GPUMatrix = try begin using CUDA
         @suppress_out CUDA.device()

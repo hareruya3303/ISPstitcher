@@ -13,11 +13,11 @@ The standard generalized cross correlation algorithm employed here uses the FFT 
 
 ## Moving average GCC
 
-This formulation subtracts the average of the block from the signals, which essentially makes it so brighter colors (higher RGB values) don't pull the average up. Considering we zer-pad on the leading dimension, the calculation of these means also adds up more $N\mathrm{log}(N)$ steps. It is negligibly more costly and performs better than the GCC.
+This formulation subtracts the average of the block from the signals, which essentially makes it so brighter colors (higher RGB values) don't pull the average up. Considering we zero-pad on the leading dimension, the calculation of these means also adds up more $N\mathrm{log}(N)$ steps. It is negligibly more costly and performs better than the GCC.
 
 ## GCC PHAT
 
-The GCC **PHAT** (phase transformed) involves taking only the phase of the frequency domain info and inverting the FFT, resulting in by far the most extreme criterion. Because the act of normalizing the signals is not linear, the operation dimensions can only be reduced in the frequency domain, meaning even though it is the most performany and has no means to calculate the GCC-PHAT is the costliest.
+The GCC **PHAT** (phase transformed) involves taking only the phase of the frequency domain info and inverting the FFT, resulting in by far the most extreme criterion. Because the act of normalizing the signals is not linear, the operation dimensions can only be reduced in the frequency domain, meaning even though it is the most performant and has no need to calculate means, the GCC-PHAT is the costliest.
 
 # Disclaimer
 

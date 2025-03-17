@@ -23,7 +23,7 @@ function _cross_correlation_averaged!(accumulator::AbstractArray{<:AbstractFloat
     σb = accumulate(b_pad, σb, dim)
     σab = accumulate(a_aug, b_aug, dim, mean_dims)
     ind_mean = [d == dim ? (1:l) : 1:size(μa, d) for d in all_dims]
-    ls = typeof(μa)(calloc, [d == dim ? l : 1 for d in all_dims]...)
+    ls = similar(μa, [d == dim ? l : 1 for d in all_dims]...)
     @inbounds ls[:] .= prod(n)*(1:l)/l
     @inbounds σa[ind_mean...] .-=  abs2.(μa[ind_mean...]) ./ ls
     @inbounds σb[ind_mean...] .-=  abs2.(μb[ind_mean...]) ./ ls
@@ -85,7 +85,7 @@ function _cross_correlation_averaged_!(accumulator::AbstractArray{<:AbstractFloa
     σb = accumulate(b_pad, σb, fft_dims_b)
     reverse!(σb, dims=dims[2:end])
     σab = accumulate(a_aug, b_aug, dims, excluded_dims)
-    ls = typeof(μa)(calloc, [d == dims[1] ? l : 1 for d in all_dims]...)
+    ls = similar(μa, [d == dims[1] ? l : 1 for d in all_dims]...)
     @inbounds ls[:] .= prod(n)*(1:l)/l
     ind_mean = [d == dims[1] ? (1:l) : 1:size(μa, d) for d in all_dims]
     ind_ab = [d == dims[1] ? (1:l) : d in dims ? (1:n[d]) : 1:1 for d in all_dims]
@@ -127,7 +127,7 @@ function _cross_correlation_averaged__!(accumulator::AbstractArray{<:AbstractFlo
     reverse!(σb, dims=dims[2:end])
     fft_dims = all_dims[in.(all_dims, [fft_dims_a]) .|| in.(all_dims, [fft_dims_b])]
     σab = accumulate(a_aug, b_aug, fft_dims, excluded_dims)
-    ls = typeof(μa)(calloc, [d == dims[1] ? l : 1 for d in all_dims]...)
+    ls = similar(μa, [d == dims[1] ? l : 1 for d in all_dims]...)
     @inbounds ls[:] .= prod(min.(na, nb))*(1:l)/l
     ind_a = [d == dims[1] ? (1:l) : 1:size(μa, d) for d in all_dims]
     ind_b = [d == dims[1] ? (1:l) : 1:size(μb, d) for d in all_dims]
@@ -152,7 +152,7 @@ function _cross_correlation_averaged!(accumulator::AbstractArray{<:AbstractFloat
     return nothing
 end
 
-# Not in-place routines. These routines analyze the dimensions of the input and allocate the specific kind of output I want.
+# Not in-place routines. These routines analyze the dimensions of the input and allocate the specific kind of output I want. Then it converts the 
 
 function _cross_correlation_averaged(a::AbstractArray{<:AbstractFloat, N}, b::AbstractArray{<:AbstractFloat, N}, dim::Integer) where {N}
     na = size(a)
@@ -168,8 +168,8 @@ end
 function _cross_correlation_averaged(a::AbstractArray{<:AbstractFloat, N}, b::AbstractArray{<:AbstractFloat, N}, dims::Union{NTuple{<:Any, Integer}, Vector{<:Integer}}) where {N}
     na = size(a)
     nb = size(b)
-    l = min(na[dims[1]], nb[dims[1]])
-    accumulator = similar(a, [d == dims[1] ? l : max(na[d], nb[d]) for d in dims]...)
+    acc_dims, reord_rangs, index_rangs = __make_indexes(na, nb, dims)
+    accumulator = similar(a, acc_dims...)
     _cross_correlation_averaged!(accumulator, a, b, dims)
-    return accumulator
+    return OffsetArray(accumulator[reord_rangs...], index_rangs...)
 end

@@ -133,8 +133,8 @@ end
 function _cross_correlation(a::AbstractArray{<:AbstractFloat, N}, b::AbstractArray{<:AbstractFloat, N}, dims::Union{NTuple{<:Any, Integer}, Vector{<:Integer}}) where {N}
     na = size(a)
     nb = size(b)
-    l = min(na[dims[1]], nb[dims[1]])
-    accumulator = similar(a, [d == dims[1] ? l : max(na[d], nb[d]) for d in dims]...)
+    acc_dims, reord_rangs, index_rangs = __make_indexes(na, nb, dims)
+    accumulator = similar(a, acc_dims ...)
     _cross_correlation!(accumulator, a, b, dims)
-    return accumulator
+    return OffsetArray(accumulator[reord_rangs...], index_rangs...)
 end

@@ -1,5 +1,12 @@
 # Padding functions for ease of computations.
 
+function zeros(x::AbstractArray{T},padding_size::Union{NTuple{N, Integer}, AbstractVector{<:Integer}}) where {N, T<:Real}
+    x_pad = similar(x, padding_size...)
+    @inbounds x_pad .= zero(T)
+    return x_pad
+end
+
+
 @inline function _fill_padding!(padded::AbstractArray{<:Union{AbstractFloat, RGB}}, original::AbstractArray{<:Union{AbstractFloat, RGB}}, padding::CartesianIndex)
     indices = CartesianIndices(original) .+ padding
     @inbounds padded[indices] .= original
@@ -24,7 +31,7 @@ end
     @assert padval ≥ Δpad
     padding = CartesianIndex(vcat(zeros(N, padding_dim-1), Δpad, zeros(N, ndim-padding_dim))...)
     padded_size = [dim == padding_dim ? dims[dim] + padval : dims[dim] for dim in eachindex(dims)]
-    padded = typeof(original)(calloc, padded_size...)
+    padded = zeros(original, padded_size)
     _fill_padding!(padded, original, padding)
     return padded
 end
@@ -33,7 +40,7 @@ end
     dims = size(original)
     @assert padval[padding_dim] ≥ Δpad
     padding = CartesianIndex([dim == padding_dim ? Δpad : 0 for dim in eachindex(dims)]...)
-    padded = typeof(original)(calloc, (size(original) .+ padval)...)
+    padded = zeros(original, (size(original) .+ padval))
     _fill_padding!(padded, original, padding)
     return padded
 end
@@ -42,7 +49,7 @@ end
     dims = size(original)
     padding = CartesianIndex([dim in padding_dims ? Δpad[findfirst(isequal(dim), padding_dims)] : 0 for dim in eachindex(dims)]...)
     padded_size = [dim in padding_dims ? dims[dim] + padval[findfirst(isequal(dim), padding_dims)] : dims[dim] for dim in eachindex(dims)]
-    padded = typeof(original)(calloc, padded_size...)
+    padded = zeros(original, padded_size)
     _fill_padding!(padded, original, padding)
     return padded
 end
@@ -53,7 +60,7 @@ end
     @assert padval ≥ Δpad
     padding = CartesianIndex(vcat(zeros(N, padding_dim-1), Δpad, zeros(N, ndim-padding_dim))...)
     padded_size = [dim == padding_dim ? dims[dim] + padval : dims[dim] for dim in eachindex(dims)]
-    padded = typeof(original)(calloc, padded_size...)
+    padded = zeros(original, padded_size)
     _fill_ones!(padded, original, padding)
     return padded
 end
@@ -63,7 +70,7 @@ end
     println("This is the impl.")
     @assert padval[padding_dim] ≥ Δpad
     padding = CartesianIndex([dim == padding_dim ? Δpad : 0 for dim in eachindex(dims)]...)
-    padded = typeof(original)(calloc, (size(original) .+ padval)...)
+    padded = zeros(original, (size(original) .+ padval))
     _fill_ones!(padded, original, padding)
     return padded
 end
@@ -72,13 +79,13 @@ end
     dims = size(original)
     padding = CartesianIndex([dim in padding_dims ? Δpad[findfirst(isequal(dim), padding_dims)] : 0 for dim in eachindex(dims)]...)
     padded_size = [dim in padding_dims ? dims[dim] + padval[findfirst(isequal(dim), padding_dims)] : dims[dim] for dim in eachindex(dims)]
-    padded = typeof(original)(calloc, padded_size...)
+    padded = zeros(original, padded_size)
     _fill_ones!(padded, original, padding)
     return padded
 end
 
 @inline function fill_ones(original::AbstractArray{T}, indmin::Union{NTuple{N, Integer}, Vector{<:Integer}}, indmax::Union{NTuple{N, Integer}, Vector{<:Integer}}) where {T<:Union{AbstractFloat, RGB}, N}
-    padded = typeof(original)(calloc, size(original)...)
+    padded = zeros(original, size(original))
     _fill_ones!(padded, indmin, indmax)
     return padded
 end

@@ -14,32 +14,7 @@ left_keys = [:left, :Left, :LEFT, :LEFT_RIGHT, :Left_Right, :left_right]
 right_keys = [:right, :Right, :RIGHT, :RIGHT_LEFT, :Right_Left, :right_left]
 
 
-function _get_indexes(na::Tuple{Integer, Integer}, nb::Tuple{Integer, Integer}, dim::Integer)
-    if dim ==1
-        y = min(na[1], nb[1])
-        return [1:y, :], [nb[1]-y+1:nb[1], :]
-    elseif dim ==2
-        x = min(na[2], nb[2])
-        return [:, 1:x], [:, (nb[2]-x+1):nb[2]]
-    else
-        error("Unsupported dimension! Images are considered to be 2D only!")
-    end
-end
-
-function _get_indexes(na::Tuple{Integer, Integer}, nb::Tuple{Integer, Integer}, dim::Union{NTuple{N, Integer}, Vector{<:Integer}}) where {N}
-    if dim == (1,2)
-        y = min(na[1], nb[1])
-        return [1:y, :], [(nb[1]-y+1):nb[1], :]
-    elseif dim == (2,1)
-        x = min(na[2], nb[2])
-        return [:, 1:x], [:, (nb[2]-x+1):nb[2]]
-    else
-        error("Unsupported dimension! Images are considered to be 2D only!")
-    end
-end
-
-
-function _generalized_cross_correlation_none(a::AbstractArray{<:AbstractFloat, N}, b::AbstractArray{<:AbstractFloat, N}, dim::Union{Integer, NTuple{<:Any, Integer}, Vector{<:Integer}}) where {N}
+function _img_cross_correlation_none(a::AbstractArray{<:AbstractFloat, N}, b::AbstractArray{<:AbstractFloat, N}, dim::Union{Integer, NTuple{<:Any, Integer}, Vector{<:Integer}}) where {N}
     @match N begin
         1 => _cross_correlation(a, b)
         2 => _cross_correlation(a, b, dim)
@@ -48,7 +23,7 @@ function _generalized_cross_correlation_none(a::AbstractArray{<:AbstractFloat, N
     end
 end
 
-function _generalized_cross_correlation_averaged(a::AbstractArray{<:AbstractFloat, N}, b::AbstractArray{<:AbstractFloat, N}, dim::Union{Integer, NTuple{<:Any, Integer}, Vector{<:Integer}}) where {N}
+function _img_cross_correlation_averaged(a::AbstractArray{<:AbstractFloat, N}, b::AbstractArray{<:AbstractFloat, N}, dim::Union{Integer, NTuple{<:Any, Integer}, Vector{<:Integer}}) where {N}
     @match N begin
         1 => _cross_correlation_averaged(a, b)
         2 => _cross_correlation_averaged(a, b, dim)
@@ -57,7 +32,7 @@ function _generalized_cross_correlation_averaged(a::AbstractArray{<:AbstractFloa
     end
 end
 
-function _generalized_cross_correlation_PHAT(a::AbstractArray{<:AbstractFloat, N}, b::AbstractArray{<:AbstractFloat, N}, dim::Union{Integer, NTuple{<:Any, Integer}, Vector{<:Integer}}) where {N}
+function _img_cross_correlation_PHAT(a::AbstractArray{<:AbstractFloat, N}, b::AbstractArray{<:AbstractFloat, N}, dim::Union{Integer, NTuple{<:Any, Integer}, Vector{<:Integer}}) where {N}
     @match N begin
         1 => _cross_correlation_PHAT(a, b)
         2 => _cross_correlation_PHAT(a, b, dim)
@@ -66,13 +41,13 @@ function _generalized_cross_correlation_PHAT(a::AbstractArray{<:AbstractFloat, N
     end
 end
 
-function _generalized_cross_correlation(a::AbstractArray{<:AbstractFloat}, b::AbstractArray{<:AbstractFloat}, dim::Union{Integer, NTuple{<:Any, Integer}, Vector{<:Integer}}; type::Symbol=:none)
+function _img_cross_correlation(a::AbstractArray{<:AbstractFloat}, b::AbstractArray{<:AbstractFloat}, dim::Union{Integer, NTuple{<:Any, Integer}, Vector{<:Integer}}; type::Symbol=:none)
     if type in none_keys 
-        return _generalized_cross_correlation_none(a, b, dim)
+        return _img_cross_correlation_none(a, b, dim)
     elseif type in averaged_keys
-        return _generalized_cross_correlation_averaged(a,b,dim)
+        return _img_cross_correlation_averaged(a,b,dim)
     elseif type in phat_keys
-        return _generalized_cross_correlation_PHAT(a,b,dim)
+        return _img_cross_correlation_PHAT(a,b,dim)
     else
         error("Invalid type for correlation!\n For no special correlation algorithm, try ", none_keys, ".\n For moving average correlation, try ", averaged_keys, ".\n And for PHAT correlations, try ", phat_keys, ".")
     end
@@ -97,7 +72,7 @@ function generalized_cross_correlation(a::AbstractMatrix{<:RGB{T}}, b::AbstractM
     else
         error("Invalid option for color type!\n Use one of ", rgb_keys, "\n or use ", gray_keys, "for grayscale processing!")
     end
-    return _generalized_cross_correlation(A, B, dim, type=type)
+    return _img_cross_correlation(A, B, dim, type=type)
 end
 
 function generalized_cross_correlation(a::AbstractMatrix{<:RGB{T}}, b::AbstractMatrix{<:RGB{T}}; dim::Symbol, type::Symbol=:none, gpu = false, rgb::Symbol = :Gray) where {T<:Real}
@@ -134,7 +109,7 @@ function generalized_cross_correlation_shift(a::AbstractMatrix{<:RGB{T}}, b::Abs
     else
         error("Invalid option for color type!\n Use one of ", rgb_keys, "\n or use ", gray_keys, "for grayscale processing!")
     end
-    return _generalized_cross_correlation(A, B, dims, type=type)
+    return _img_cross_correlation(A, B, dims, type=type)
 end
 
 function generalized_cross_correlation_shift(a::AbstractMatrix{<:RGB{T}}, b::AbstractMatrix{<:RGB{T}}, dim::Union{Integer, NTuple{<:Any, Integer}, Vector{<:Integer}}; type::Symbol=:none, gpu = false, rgb::Symbol = :Gray) where {T<:Real}
@@ -156,7 +131,7 @@ function generalized_cross_correlation_shift(a::AbstractMatrix{<:RGB{T}}, b::Abs
     else
         error("Invalid option for color type!\n Use one of ", rgb_keys, "\n or use ", gray_keys, "for grayscale processing!")
     end
-    return _generalized_cross_correlation(A, B, dim, type=type)
+    return _img_cross_correlation(A, B, dim, type=type)
 end
 
 function generalized_cross_correlation_shift(a::AbstractMatrix{<:RGB{T}}, b::AbstractMatrix{<:RGB{T}}; dim::Symbol, type::Symbol=:none, gpu = false, rgb::Symbol = :Gray) where {T<:Real}

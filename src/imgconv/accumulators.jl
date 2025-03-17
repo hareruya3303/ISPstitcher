@@ -202,7 +202,7 @@ function accumulate(a::AbstractArray{<:AbstractFloat}, b::AbstractArray{<:Abstra
         accumulator = similar(a)
         _accumulate!(accumulator, a, b, accumulation_dim)
     else
-        accumulator = typeof(a)(calloc, [d in reduction_dims ? 1 : size(a, d) for d in 1:ndims(a)]...)
+        accumulator = similar(a, [d in reduction_dims ? 1 : size(a, d) for d in 1:ndims(a)]...)
         _accumulate!(accumulator, a, b, accumulation_dim, reduction_dims)
     end
     return accumulator
@@ -213,7 +213,7 @@ function accumulate_PHAT(a::AbstractArray{<:AbstractFloat}, b::AbstractArray{<:A
         accumulator = similar(a)
         _accumulate_PHAT!(accumulator, a, b, accumulation_dim)
     else
-        accumulator = typeof(a)(calloc, [d in reduction_dims ? 1 : size(a, d) for d in 1:ndims(a)]...)
+        accumulator = similar(a, [d in reduction_dims ? 1 : size(a, d) for d in 1:ndims(a)]...)
         _accumulate_PHAT!(accumulator, a, b, accumulation_dim, reduction_dims)
     end
     return accumulator
@@ -224,7 +224,7 @@ function accumulate(a::AbstractArray{<:AbstractFloat}, b::AbstractArray{<:Abstra
         accumulator = similar(a)
         _accumulate!(accumulator, a, b, accumulation_dims)
     else
-        accumulator = typeof(a)(calloc, [d in reduction_dims ? 1 : size(a, d) for d in 1:ndims(a)]...)
+        accumulator = similar(a, [d in reduction_dims ? 1 : size(a, d) for d in 1:ndims(a)]...)
         _accumulate!(accumulator, a, b, accumulation_dims, reduction_dims)
     end
     return accumulator
@@ -235,7 +235,7 @@ function accumulate_PHAT(a::AbstractArray{<:AbstractFloat}, b::AbstractArray{<:A
         accumulator = similar(a)
         _accumulate_PHAT!(accumulator, a, b, accumulation_dims)
     else
-        accumulator = typeof(a)(calloc, [d in reduction_dims ? 1 : size(a, d) for d in 1:ndims(a)]...)
+        accumulator = similar(a, [d in reduction_dims ? 1 : size(a, d) for d in 1:ndims(a)]...)
         _accumulate_PHAT!(accumulator, a, b, accumulation_dims, reduction_dims)
     end
     return accumulator
