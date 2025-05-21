@@ -98,7 +98,7 @@ function _get_indexes(na::Tuple{Integer, Integer}, nb::Tuple{Integer, Integer}, 
     end
 end
 
-function __make_indexes(na, nb, dims)
+function __make_indexes(na::NTuple{N, U}, nb::NTuple{N, U}, dims::Union{NTuple{M, U}, Vector{U}}) where {N, M, U<:Integer}
     acc_dims = Vector{Int}(calloc, length(dims))
     reord_dims = Vector{Vector{Int}}(undef, length(dims))
     index_dims = Vector{UnitRange{Int}}(undef, length(dims))

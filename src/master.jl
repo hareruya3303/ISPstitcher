@@ -1,6 +1,6 @@
 module ISPstitcher
 dir = @__DIR__
-using FFTW, Images, LinearAlgebra, Statistics, DSP, Suppressor, ArrayAllocators, Match, OffsetArrays
+using FFTW, Images, LinearAlgebra, Statistics, DSP, Suppressor, ArrayAllocators, Match, OffsetArrays, ProgressMeter
 using FFTW: rFFTWPlan
 import Base: zeros
 
@@ -20,5 +20,6 @@ catch e
     end
 end;
 
-include(string(dir, "/imgconv/imgconv.jl"))
+include(joinpath(dir, "imgconv", "imgconv.jl"))
+include(joinpath(dir, "imgblend", "imgblend.jl"))
 end
